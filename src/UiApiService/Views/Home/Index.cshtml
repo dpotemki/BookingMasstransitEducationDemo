@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="booking-panel">
+        <img src="https://images.squarespace-cdn.com/content/v1/5b0eb59df793928fa7f488ff/1536780543743-TZT0SJMRKV5LUOOY8FS0/Industryyyy.jpg" alt="Tour Image" class="tour-image" />
+            <div class="booking-details">
+                <label for="bookingDate">Choose your booking date:</label>
+                <input type="date" id="bookingDate" name="bookingDate">
+                <button id="bookTourBtn">Book Tour</button>
+            </div>
+        </div>
+        <div class="sagas-panel">
+            <h3>Active Sagas:</h3>
+            <div id="sagasList"></div>
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const bookTourBtn = document.getElementById('bookTourBtn');
+        const bookingDateInput = document.getElementById('bookingDate');
+        const sagasList = document.getElementById('sagasList');
+
+        bookTourBtn.addEventListener('click', function () {
+            const bookingDate = bookingDateInput.value;
+            if (bookingDate) {
+                bookTour(bookingDate);
+            } else {
+                alert('Please select a booking date.');
+            }
+        });
+
+        function bookTour(bookingDate) {
+            fetch('/api/sagas/start?bookingDate=' + bookingDate, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Booked Tour with ID:', data.BookingId);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function fetchSagas() {
+            fetch('/api/sagas')
+                .then(response => response.json())
+                .then(data => {
+                    sagasList.innerHTML = '';
+                    data.forEach(saga => {
+                        const sagaDiv = document.createElement('div');
+                        sagaDiv.classList.add('saga');
+
+                        const header = document.createElement('h3');
+                        header.textContent = `Booking ID: ${saga.bookingId}`;
+                        sagaDiv.appendChild(header);
+
+                        const state = document.createElement('p');
+                        state.textContent = `Current State: ${saga.currentState}`;
+                        sagaDiv.appendChild(state);
+
+                        const bookingDate = document.createElement('p');
+                        bookingDate.textContent = `Booking Date: ${new Date(saga.bookingDate).toLocaleDateString()}`;
+                        sagaDiv.appendChild(bookingDate);
+
+                        const createDate = document.createElement('p');
+                        createDate.textContent = `Creation Date: ${new Date(saga.createDate).toLocaleDateString()}`;
+                        sagaDiv.appendChild(createDate);
+
+                        const itemsList = document.createElement('ul');
+                        saga.bookingItemStates.forEach(item => {
+                            const itemLi = document.createElement('li');
+                            itemLi.textContent = `Item ID: ${item.id}, Type: ${item.type}, State: ${item.state}`;
+                            itemsList.appendChild(itemLi);
+                        });
+                        sagaDiv.appendChild(itemsList);
+
+                        sagasList.appendChild(sagaDiv);
+                    });
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => setTimeout(fetchSagas, 1000)); // Poll every second
+        }
+
+        // Start polling for sagas on load
+        fetchSagas();
+    });
+
+    </script>
+
+    <style>
+    body, h3, button {
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .booking-panel, .sagas-panel {
+        width: 45%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 10px;
+    }
+
+    .tour-image {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .booking-details {
+        margin-bottom: 20px;
+    }
+
+    #bookTourBtn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        #bookTourBtn:hover {
+            background-color: #0056b3;
+        }
+
+    .sagas-panel {
+        /* max-height: 500px; */
+        overflow-y: auto;
+    }
+    </style>

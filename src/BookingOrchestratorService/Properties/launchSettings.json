@@ -1,0 +1,21 @@
+{
+  "profiles": {
+
+    "Docker": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:53053;http://localhost:53054"
+    },
+    "BookingOrchestratorService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:53053;http://localhost:53054"
+    }
+  }
+}
