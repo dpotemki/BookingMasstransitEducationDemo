@@ -35,10 +35,10 @@ namespace BookingOrchestratorService.BookingStateMachines
         public Event<TransferBookingConfirmed> TransferBookingConfirmedEvent { get; private set; }
         public Event<TransferBookingRejected> TransferBookingRejectedEvent { get; private set; }
 
-        public Event<HotelBookingRejected> HotelBookingRejectedEvent { get;private set; }
+        public Event<HotelBookingRejected> HotelBookingRejectedEvent { get; private set; }
         public Event<HotelBookingConfirmed> HotelBookingConfirmedEvent { get; private set; }
 
-        
+
         public BookingStateMachine(IOptions<EndpointsConfiguration> settings, ILogger<BookingStateMachine> logger)
         {
             _logger = logger;
@@ -80,43 +80,6 @@ namespace BookingOrchestratorService.BookingStateMachines
                     .ThenAsync(CompensateOrders)
                     .TransitionTo(Rejected)/*.Finalize()*/
         );
-
-
-
-            //During(AwaitingConfirmation,
-            //    When(FlyghtBookingConfirmedEvent)
-            //    .Then(UpdateFlyghtServiceConfirmation()
-            //    ),
-            //    When(FlyghtBookingRejectedEvent)
-            //    .Then(UpdateFlyghtServiceRejection()),
-
-            //    When(BookingConfirmedEvent)
-            //    .Then(context =>
-            //    {
-            //        context.Saga.UpdateServiceState(context.Message.ServiceType, BookingItemStatus.Confirmed);
-            //        _logger.LogInformation($"Booking {context.Saga.CorrelationId} confirmed for {context.Message.ServiceType}");
-            //    }
-            //    )
-            //    .If(context => context.Saga.AreAllServicesConfirmed(), binder =>
-            //        binder.TransitionTo(Completed)
-            //        .Then(context => _logger.LogInformation($"All services confirmed for {context.Saga.CorrelationId}"))
-            //        //.Finalize()
-            //        )
-
-            //    ,
-            //    When(BookingRejectedEvent)
-            //        .Then(context =>
-            //        {
-            //            _logger.LogWarning($"Booking rejected for {context.Message.ServiceType}: {context.Message.Reason}");
-            //            context.Saga.UpdateServiceState(context.Message.ServiceType, BookingItemStatus.Rejected, context.Message.Reason);
-            //        })
-            //        .ThenAsync(async context => await CompensateOrders(context))
-            //        .TransitionTo(Rejected)
-            //        //.Finalize()
-            //        );
-
-
-
         }
 
         private Action<BehaviorContext<BookingState, HotelBookingRejected>> UpdateHotelServiceRejection()
@@ -153,7 +116,7 @@ namespace BookingOrchestratorService.BookingStateMachines
                 LogConfirmEvent(BookingItemTypeEnum.Transfer, context.Saga.BookingId);
             };
         }
-        private Action<BehaviorContext<BookingState, FlyghtBookingRejected>> UpdateFlyghtServiceRejection()         
+        private Action<BehaviorContext<BookingState, FlyghtBookingRejected>> UpdateFlyghtServiceRejection()
         {
             return context =>
             {
@@ -205,7 +168,7 @@ namespace BookingOrchestratorService.BookingStateMachines
             State(() => Completed);
         }
 
-        
+
 
         private static void InitializeBookingData(BehaviorContext<BookingState, BookingRequested> context)
         {
@@ -284,7 +247,7 @@ namespace BookingOrchestratorService.BookingStateMachines
                 await endpoint.Send<IBookingCancellation>(new
                 {
                     CorrelationId = context.Saga.BookingId,
-                     
+
                 });
                 _logger.LogInformation($"Sent compensation message for {serviceType} booking for {context.Saga.CorrelationId}");
             }
