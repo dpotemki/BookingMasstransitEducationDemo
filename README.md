@@ -1,5 +1,7 @@
 # Booking MassTransit Educational Example
 
+[Watch the Video](https://www.youtube.com/watch?v=znFWvCjSC3M)
+
 ## **Описание проекта**
 Дэмо версия микросервисной архитектуры, outbox (InMemory) и Saga(rabbitmq + posgresql) паттерна при помощи библиотеки MassTransit. 
 
